@@ -6,7 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collation = "url_data")
+@Document(collection = "url_data")
 @Data
 @Builder
 @NoArgsConstructor
