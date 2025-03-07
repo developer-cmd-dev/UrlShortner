@@ -1,1 +1,6 @@
-
+spring:
+  data:
+    mongodb:
+        uri: mongodb+srv://devkmandal0:Devk4522@urlshortner.7vdzu.mongodb.net/?retryWrites=true&w=majority&appName=UrlShortner
+        database: UrlShornter
+        auto-index-creation: true

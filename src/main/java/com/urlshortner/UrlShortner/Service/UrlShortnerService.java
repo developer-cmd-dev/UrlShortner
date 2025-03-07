@@ -3,8 +3,10 @@ package com.urlshortner.UrlShortner.Service;
 import com.google.common.hash.Hashing;
 import com.urlshortner.UrlShortner.Entity.UrlsData;
 import com.urlshortner.UrlShortner.Exception.CustomException;
+import com.urlshortner.UrlShortner.Repository.UrlDataRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +22,15 @@ public class UrlShortnerService  {
 
     private HashMap<String,UrlsData> storage = new HashMap<>();
 
+    private final UrlDataRepository urlDataRepository;
+
+    public UrlShortnerService(UrlDataRepository urlDataRepository){
+        this.urlDataRepository=urlDataRepository;
+    }
+
+
+
     public UrlsData generateHash(String url){
-        if(!storage.containsValue(url)){
             String hashed=hashing(url);
             String regex="(https?://[^/]+/)";
             Pattern pattern = Pattern.compile(regex);
@@ -29,11 +38,8 @@ public class UrlShortnerService  {
             if(matcher.find() && hashed!=null){
                 String result = matcher.group();
                 UrlsData data = UrlsData.builder().hashedUrl(result+hashed).hashcode(hashed).originalUrl(url).build();
-                storage.put(hashed,data);
-                return storage.get(hashed);
+               return urlDataRepository.save(data);
             }
-
-        }
 
         UrlsData data = null;
         for (Map.Entry<String,UrlsData> entry:storage.entrySet()){

@@ -28,7 +28,6 @@ public class UrlShortnerController {
         this.urlShortnerService=urlShortnerService;
     }
 
-
     @PostMapping
     public ResponseEntity<UrlsData> hashUrl(@RequestBody String url){
       try {
