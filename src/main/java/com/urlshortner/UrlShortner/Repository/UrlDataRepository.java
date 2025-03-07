@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UrlDataRepository extends MongoRepository<UrlsData,String> {
 
-    UrlsData findByUrl(String url);
+
 
 }

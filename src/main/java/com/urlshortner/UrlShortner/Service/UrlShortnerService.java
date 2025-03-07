@@ -18,63 +18,55 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Service
-public class UrlShortnerService  {
+public class UrlShortnerService {
 
     private HashMap<String,UrlsData> storage = new HashMap<>();
 
-    private final UrlDataRepository urlDataRepository;
+
+    private UrlDataRepository urlDataRepository;
+
 
     public UrlShortnerService(UrlDataRepository urlDataRepository){
-        this.urlDataRepository=urlDataRepository;
+        this.urlDataRepository = urlDataRepository;
     }
 
 
-
-    public UrlsData generateHash(String url){
-            String hashed=hashing(url);
-            String regex="(https?://[^/]+/)";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(url);
-            if(matcher.find() && hashed!=null){
-                String result = matcher.group();
-                UrlsData data = UrlsData.builder().hashedUrl(result+hashed).hashcode(hashed).originalUrl(url).build();
-               return urlDataRepository.save(data);
-            }
-
-        UrlsData data = null;
-        for (Map.Entry<String,UrlsData> entry:storage.entrySet()){
-            if (entry.getKey().equals(entry.getValue().getOriginalUrl())){
-                data=entry.getValue();
-                log.info(entry.getValue().toString());
-            }
+    public UrlsData generateHash(String url) {
+        String hashed = hashing(url);
+        String regex = "(https?://[^/]+/)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(url);
+        UrlsData response = null;
+        if (matcher.find() && hashed != null) {
+            String result = matcher.group();
+            UrlsData data = UrlsData.builder().hashedUrl(result + hashed).hashcode(hashed).originalUrl(url).build();
+            response = urlDataRepository.save(data);
         }
-        return data;
+        return response;
+
     }
 
-    public String redirecturl(String hashcode, HttpServletResponse response){
-        UrlsData data= storage.get(hashcode);
-        try{
-         return data.getOriginalUrl();
+    public String redirecturl(String hashcode, HttpServletResponse response) {
+        UrlsData data = storage.get(hashcode);
+        try {
+            return data.getOriginalUrl();
         } catch (Exception e) {
-            throw new CustomException("Redirection Error.",HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException("Redirection Error.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
 
-    public HashMap<String,UrlsData> getAll(){
+    public HashMap<String, UrlsData> getAll() {
         return storage;
     }
 
 
-
-
-    private String hashing(String url){
+    private String hashing(String url) {
         return Hashing.sipHash24()
                 .hashString(url, StandardCharsets.UTF_16).toString();
 
     }
-
 
 
 }
