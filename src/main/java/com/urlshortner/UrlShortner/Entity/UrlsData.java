@@ -14,4 +14,5 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class UrlsData {
     private String hashcode;
     private String hashedUrl;
+    private String originalUrl;
 }

@@ -31,39 +31,27 @@ public class UrlShortnerController {
 
     @PostMapping
     public ResponseEntity<UrlsData> hashUrl(@RequestBody String url){
-
-        String response = urlShortnerService.generateHash(url);
-        String regex="(https?://[^/]+/)";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(url);
-        if(matcher.find() && response!=null){
-            String result = matcher.group();
-            return new ResponseEntity<>(UrlsData.builder().hashedUrl(result+response).hashcode(response).build(),
-                    HttpStatus.OK);
-        }
-        throw new CustomException("Short url not generated!",HttpStatus.INTERNAL_SERVER_ERROR);
+      try {
+          UrlsData response = urlShortnerService.generateHash(url);
+          return new ResponseEntity<>(response,HttpStatus.OK);
+      }catch (Exception e){
+          throw new CustomException("Something Went wrong",HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
 
     @GetMapping("/{hashed}")
-    public void getUrl(@PathVariable String hashed, HttpServletResponse response){
-        String url = urlShortnerService.getUrl(hashed);
-        log.info(url);
-git
-        if(url !=null ){
-            try{
-                response.sendRedirect(url);
-            }catch (Exception e){
-                throw new CustomException(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+    public ResponseEntity<String> redirectUrl(@PathVariable String hashed, HttpServletResponse response){
+
+        String url = urlShortnerService.redirecturl(hashed, response);
+        if(url!=null) {
+           return new ResponseEntity<>(url, HttpStatus.OK);
         }
-
             throw new CustomException("Provided Link is wrong.", HttpStatus.BAD_REQUEST);
-
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<HashMap<String,String>> getAll(){
-        HashMap<String,String> response =  urlShortnerService.getAll();
+    public ResponseEntity<HashMap<String,UrlsData>> getAll(){
+        HashMap<String,UrlsData> response =  urlShortnerService.getAll();
         log.info(response.toString());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
