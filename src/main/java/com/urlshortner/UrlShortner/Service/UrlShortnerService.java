@@ -27,6 +27,10 @@ public class UrlShortnerService  {
     }
 
 
+    public HashMap<String,String> getAll(){
+        return storage;
+    }
+
 
 
 

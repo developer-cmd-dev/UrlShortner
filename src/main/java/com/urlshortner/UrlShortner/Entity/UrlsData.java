@@ -12,9 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UrlsData {
-    @Id
-    private ObjectId Id;
-    @NonNull
-    private String url;
+    private String hashcode;
     private String hashedUrl;
 }
