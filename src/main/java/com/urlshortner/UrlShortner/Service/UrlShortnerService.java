@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -24,25 +25,29 @@ public class UrlShortnerService {
 
 
     private UrlDataRepository urlDataRepository;
+    private RestTemplate restTemplate;
 
-
-    public UrlShortnerService(UrlDataRepository urlDataRepository){
+    public UrlShortnerService(UrlDataRepository urlDataRepository,RestTemplate restTemplate){
         this.urlDataRepository = urlDataRepository;
+        this.restTemplate = restTemplate;
     }
 
 
     public UrlsData generateHash(String url) {
-        String hashed = hashing(url);
-        String regex = "(https?://[^/]+/)";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(url);
-        UrlsData response = null;
-        if (matcher.find() && hashed != null) {
-            String result = matcher.group();
-            UrlsData data = UrlsData.builder().hashedUrl(result + hashed).hashcode(hashed).originalUrl(url).build();
-            response = urlDataRepository.save(data);
+        UrlsData dbData = urlDataRepository.findByOriginalUrl(url).orElse(null);
+
+        if(dbData ==null){
+            String hashed = hashing(url);
+            String regex = "(https?://[^/]+/)";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(url);
+            if (matcher.find()) {
+                String result = matcher.group();
+                UrlsData data = UrlsData.builder().hashedUrl(result + hashed).hashcode(hashed).originalUrl(url).build();
+                return urlDataRepository.save(data);
+            }
         }
-        return response;
+            return dbData;
 
     }
 
