@@ -1,14 +1,10 @@
 package com.urlshortner.UrlShortner.Repository;
 
 import com.urlshortner.UrlShortner.ApiResponse.UrlResponseBody;
-import com.urlshortner.UrlShortner.Entity.UrlsData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-
-public interface UrlDataRepository extends MongoRepository<UrlsData,String> {
-
-
-    Optional<UrlsData> findByOriginalUrl(String url);
+public interface ApiResponseRepository extends MongoRepository<UrlResponseBody,String> {
+    Optional<UrlResponseBody> findByDestination (String url);
 }

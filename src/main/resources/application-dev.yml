@@ -4,3 +4,7 @@ spring:
         uri: ${MONGO_URL}
         database: UrlShornter
         auto-index-creation: true
+
+api:
+  key: ${API_KEY}
+  url: ${URL_SHORTNER_API}
